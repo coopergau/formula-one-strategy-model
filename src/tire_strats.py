@@ -2,13 +2,16 @@ import fastf1
 import fastf1.plotting
 import matplotlib.pyplot as plt
 
-def tire_strat_chart(session):
+def plot_tire_strat(race):
+    """
+    Plots a visual of the different tire strategies of each driver for a given race.
+    """
     # Get driver names
-    drivers = session.drivers
-    drivers = [session.get_driver(driver)["Abbreviation"] for driver in drivers]
+    drivers = race.drivers
+    drivers = [race.get_driver(driver)["Abbreviation"] for driver in drivers]
     
     # Get driver stint data
-    laps = session.laps
+    laps = race.laps
     stints = laps[["Driver", "Stint", "Compound", "LapNumber"]]
     stints = stints.groupby(["Driver", "Stint", "Compound"])
     stints = stints.count().reset_index()
@@ -28,7 +31,7 @@ def tire_strat_chart(session):
 
         previous_stint_end = 0
         for _, row in driver_stints.iterrows():
-            tire_colour = fastf1.plotting.get_compound_color(row["Compound"], session=session)
+            tire_colour = fastf1.plotting.get_compound_color(row["Compound"], session=race)
             
             plt.barh(
                 y=driver,
@@ -53,10 +56,10 @@ def tire_strat_chart(session):
             color="black"
         )
     
-    plt.title(f"{session.event["EventName"]} {session.event["OfficialEventName"][-4:]}")
+    plt.title(f"{race.event["EventName"]} {race.event["OfficialEventName"][-4:]}")
     plt.xlabel("Lap Number")
     ax.invert_yaxis() # Top down in order of finishing
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['left'].set_visible(False)
-    plt.show(block=flase)
+    plt.show(block=False)
