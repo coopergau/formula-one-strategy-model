@@ -13,8 +13,8 @@ def plot_lap_pace_comparison(race, driver1, driver2):
                             color_scheme='fastf1')
     
     # Get driver lap times
-    driver1_laps = race.laps.pick_driver(driver1).pick_quicklaps()
-    driver2_laps = race.laps.pick_driver(driver2).pick_quicklaps()
+    driver1_laps = race.laps.pick_drivers(driver1).pick_quicklaps()
+    driver2_laps = race.laps.pick_drivers(driver2).pick_quicklaps()
 
     # Plot the data
     fig, ax = plt.subplots()
@@ -26,4 +26,4 @@ def plot_lap_pace_comparison(race, driver1, driver2):
     ax.set_title("Lap Times Comparison")
     ax.legend()
 
-    plt.show(block=False)
+    plt.show()

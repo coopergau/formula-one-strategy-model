@@ -62,4 +62,4 @@ def plot_tire_strat(race):
     ax.spines['top'].set_visible(False)
     ax.spines['right'].set_visible(False)
     ax.spines['left'].set_visible(False)
-    plt.show(block=False)
+    plt.show()
