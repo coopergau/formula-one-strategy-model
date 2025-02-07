@@ -10,7 +10,7 @@ Current focus: Find optimal strategy to minimize total race time not considering
 1. Make functions for estimated lap time with inputs (tire compound, tire age, fuel load)
     - Using gradient boosting
     - Has shown a clear difference in year to year performance
-    - Take on the position that youre part way through the season so you can train on previous years race data and estiamte
+    - Take on the position that youre part way through the season so you can train on previous years race data and estimate
     the difference based on the difference in this years previous race lap times
 2. Try a dynamic programming solver
 
