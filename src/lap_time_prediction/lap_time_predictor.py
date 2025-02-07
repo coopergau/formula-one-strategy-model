@@ -3,7 +3,6 @@ import fastf1.plotting
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.metrics import mean_absolute_error, mean_squared_error
@@ -15,17 +14,18 @@ Assumptions: Car is in free air with ideal weather conditions. Fuel usage is uni
 Found that using one driver to predict themselves was better even though its less data.
 """
 
-def process_data(track_name, driver, years):
+def process_data(track_name, driver, years, test_year):
     # Get all data
     lap_dfs = []
-    for year in years:
+    for year in years + test_year:
         race = fastf1.get_session(year, track_name, 'R')
         race.load()
         laps = race.laps.pick_drivers([driver]).pick_quicklaps() 
-        laps = laps[["LapTime", "LapNumber", "TyreLife", "Compound"]]
+        laps = laps[["LapStartDate", "LapTime", "LapNumber", "TyreLife", "Compound"]]
         lap_dfs.append(laps)
     laps_df = pd.concat(lap_dfs, ignore_index=True)
     laps_df["LapTime"] = laps_df["LapTime"].dt.total_seconds()
+    laps_df['LapStartDate'] = pd.to_datetime(laps_df['LapStartDate'])
 
     # One hot encode tire compunds
     encoder = OneHotEncoder(sparse_output=False)
@@ -34,12 +34,17 @@ def process_data(track_name, driver, years):
     laps_df[tire_columns] = tire_encoded
 
     # Return train and test data
-    X = laps_df[["LapNumber", "TyreLife"] + list(tire_columns)]
-    y = laps_df["LapTime"]
-    return train_test_split(X, y, test_size=0.2, random_state=2)
+    train = laps_df[laps_df['LapStartDate'].dt.year != test_year[0]]
+    test = laps_df[laps_df['LapStartDate'].dt.year == test_year[0]]
+    X_train = train[["LapNumber", "TyreLife"] + list(tire_columns)]
+    X_test = test[["LapNumber", "TyreLife"] + list(tire_columns)]
+    y_train = train["LapTime"]
+    y_test = test["LapTime"]
+
+    return X_train, X_test, y_train, y_test
     
 def train_model(X_train, y_train):
-    model = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=2)
+    model = GradientBoostingRegressor(n_estimators=100, learning_rate=0.1, max_depth=3, random_state=1)
     model.fit(X_train, y_train)
     return model
 

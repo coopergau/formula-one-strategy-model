@@ -7,13 +7,16 @@ from lap_pace import plot_lap_pace_comparison
 from lap_time_prediction.lap_time_predictor import process_data, train_model, evaluate_model
 
 def main():
-    race = fastf1.get_session(2024, 'Saudi Arabia', 'R')
-    race.load()
 
-    driver = "NOR"
-    track_name = "Saudi Arabia"
-    years = [2024, 2023]
-    X_train, X_test, y_train, y_test = process_data(track_name, driver, years)
+    track_name = "Spain"
+    driver = "HAM"
+    years = [2021]
+    test_year = [2022]
+    X_train, X_test, y_train, y_test = process_data(track_name, driver, years, test_year)
+    print(type(X_train))
+    print(type(X_test))
+    print(type(y_train))
+    print(type(y_test))
     lap_time_predictor = train_model(X_train, y_train)
     mae, rmse = evaluate_model(lap_time_predictor, X_test, y_test)
 
